@@ -32,6 +32,13 @@ if FOAM_REF_VERSION( ">=", "010701" ):
     
 
 #--------------------------------------------------------------------------------------
+from Foam import FOAM_REF_VERSION
+if FOAM_REF_VERSION( ">=", "020000" ):
+    from rhoPorousMRFPimpleFlux.r2_0_0 import *
+    pass
+    
+
+#--------------------------------------------------------------------------------------
 def entry_point():
     try:
        engine = main_standalone       
