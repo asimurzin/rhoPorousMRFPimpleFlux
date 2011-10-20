@@ -97,7 +97,7 @@ def fun_Ueqn( pimple, rho, p, U, phi, turbulence, mrfZones, pZones ):
         ref.solve( UEqn == -man.fvc.grad( p ) )
         pass
     else:
-        U <<= rAU * ( UEqn.H() - ref.fvc.grad( p ) )
+        U << rAU * ( UEqn.H() - ref.fvc.grad( p ) )
         U.correctBoundaryConditions()
         pass
   
@@ -118,13 +118,13 @@ def fun_hEqn( thermo, rho, p, h, phi, turbulence, DpDt ):
 #---------------------------------------------------------------------------
 def fun_pEqn( mesh, runTime, pimple, thermo, rho, p, h, psi, U, phi, mrfZones, turbulence, UEqn, DpDt, cumulativeContErr, corr, rhoMax, rhoMin ):
 
-    rho <<= thermo.rho()
-    rho <<= rho().ext_max( rhoMin )
-    rho <<= rho().ext_min( rhoMax )
+    rho << thermo.rho()
+    rho << rho().ext_max( rhoMin )
+    rho << rho().ext_min( rhoMax )
     rho.relax()
 
     rAU = 1.0 / UEqn.A()
-    U <<= rAU() * UEqn.H()
+    U << rAU() * UEqn.H()
 
     if pimple.transonic():
         phid = ref.surfaceScalarField( ref.word( "phid" ), ref.fvc.interpolate( psi ) * ( ( ref.fvc.interpolate( U ) & mesh.Sf() ) \
@@ -142,7 +142,7 @@ def fun_pEqn( mesh, runTime, pimple, thermo, rho, p, h, psi, U, phi, mrfZones, t
             pass
         pass
     else:
-        phi <<= ref.fvc.interpolate( rho ) * ( ( ref.fvc.interpolate( U ) & mesh.Sf() ) + ref.fvc.ddtPhiCorr( rAU, rho, U, phi ) )
+        phi << ref.fvc.interpolate( rho ) * ( ( ref.fvc.interpolate( U ) & mesh.Sf() ) + ref.fvc.ddtPhiCorr( rAU, rho, U, phi ) )
         
         mrfZones.relativeFlux( ref.fvc.interpolate( rho ), phi )
         
@@ -163,16 +163,16 @@ def fun_pEqn( mesh, runTime, pimple, thermo, rho, p, h, psi, U, phi, mrfZones, t
     p.relax()
     
     # Recalculate density from the relaxed pressure
-    rho <<= thermo.rho()
-    rho <<= rho().ext_max( rhoMin )
-    rho <<= rho().ext_min( rhoMax )
+    rho << thermo.rho()
+    rho << rho().ext_max( rhoMin )
+    rho << rho().ext_min( rhoMax )
     rho.relax()
     ref.ext_Info()<< "rho max/min : " << rho.ext_max().value()  << " " << rho.ext_min().value() << ref.nl
 
     U -= rAU * ref.fvc.grad( p )
     U.correctBoundaryConditions()
 
-    DpDt <<= ref.fvc.DDt( ref.surfaceScalarField( ref.word( "phiU" ), phi() / ref.fvc.interpolate( rho ) ), p ) # mixed calculations
+    DpDt << ref.fvc.DDt( ref.surfaceScalarField( ref.word( "phiU" ), phi() / ref.fvc.interpolate( rho ) ), p ) # mixed calculations
     
     return cumulativeContErr
 
